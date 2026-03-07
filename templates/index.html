@@ -1,49 +1,510 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <title>Spam Ham Detector</title>
-  <link rel="stylesheet" href="../static/css/style.css">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MailGuard AI — Intelligent Spam Classifier</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--v:#7c3aed;--vl:#a78bfa;--vg:rgba(124,58,237,.18);--e:#10b981;--el:#6ee7b7;--eg:rgba(16,185,129,.15);--am:#f59e0b;--al:#fcd34d;--rs:#f43f5e}
+[data-theme="dark"]{--bg:#080b14;--sf:#0f1626;--sf2:#141d30;--sf3:#1a2540;--bd:#1e2d45;--bd2:#253554;--tx:#e2e8f8;--tx2:#94a3c0;--tx3:#4a5a78;--shd:0 8px 40px rgba(0,0,0,.5)}
+[data-theme="light"]{--bg:#f1f5fd;--sf:#fff;--sf2:#f8faff;--sf3:#eef2fb;--bd:#d8e0f5;--bd2:#c5d0ec;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--shd:0 8px 40px rgba(100,120,200,.12)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;transition:background .35s,color .35s}
+#bgc{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}
+.wrap{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+.con{width:100%;max-width:1080px;margin:0 auto;padding:0 1.5rem}
+/* NAV */
+nav{position:sticky;top:0;z-index:100;border-bottom:1px solid var(--bd);background:rgba(8,11,20,.88);backdrop-filter:blur(20px);transition:background .35s,border-color .35s}
+[data-theme="light"] nav{background:rgba(241,245,253,.92)}
+.ni{max-width:1080px;margin:0 auto;padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.br{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.bi{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--v),var(--e));display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:0 0 16px var(--vg);flex-shrink:0}
+.bn{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,var(--vl),var(--el));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+.nr{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;justify-content:flex-end}
+.nbg{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);border:1px solid var(--bd);padding:.2rem .65rem;border-radius:20px;white-space:nowrap}
+.nls{display:flex;gap:.4rem}
+.nl{font-size:.73rem;font-weight:500;color:var(--tx2);padding:.28rem .65rem;border-radius:7px;text-decoration:none;transition:background .2s,color .2s}
+.nl:hover{background:var(--sf3);color:var(--tx)}
+.tb{width:40px;height:22px;border-radius:11px;border:1px solid var(--bd);cursor:pointer;position:relative;background:var(--sf3);flex-shrink:0;transition:background .3s}
+.tk{position:absolute;top:2px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.58rem;transition:left .3s cubic-bezier(.34,1.56,.64,1),background .3s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+[data-theme="dark"] .tk{left:2px;background:var(--vl)}
+[data-theme="light"] .tk{left:20px;background:var(--am)}
+/* HERO */
+.hero{padding:5rem 0 3.5rem;text-align:center;animation:fup .8s ease both}
+.hbg{display:inline-flex;align-items:center;gap:.45rem;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--vl);border:1px solid rgba(124,58,237,.3);padding:.28rem .9rem;border-radius:20px;background:rgba(124,58,237,.07);margin-bottom:1.4rem}
+.hbd{width:6px;height:6px;background:var(--e);border-radius:50%;animation:pls 2s ease infinite}
+@keyframes pls{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.6);opacity:.4}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;margin-bottom:1.1rem}
+.gr{background:linear-gradient(135deg,var(--vl) 0%,var(--el) 60%,var(--al) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hs{color:var(--tx2);font-size:.97rem;max-width:500px;margin:0 auto 2.4rem;line-height:1.75}
+.hc{display:flex;align-items:center;justify-content:center;gap:.75rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;font-weight:600;letter-spacing:.04em;padding:.62rem 1.35rem;border-radius:10px;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;text-decoration:none}
+.btn:hover{transform:translateY(-2px)}
+.bp{background:linear-gradient(135deg,var(--v),#5b21b6);color:#fff;box-shadow:0 4px 24px rgba(124,58,237,.35)}
+.bp:hover{box-shadow:0 8px 32px rgba(124,58,237,.5)}
+.bs{background:linear-gradient(135deg,var(--e),#059669);color:#fff;box-shadow:0 4px 24px rgba(16,185,129,.3)}
+.bs:hover{box-shadow:0 8px 32px rgba(16,185,129,.45)}
+.bg2{background:var(--sf);color:var(--tx2);border:1px solid var(--bd)}
+.bg2:hover{border-color:var(--vl);color:var(--vl)}
+/* STATS */
+.ss{display:flex;justify-content:center;align-items:center;margin-bottom:4rem;flex-wrap:wrap;background:var(--sf);border:1px solid var(--bd);border-radius:16px;overflow:hidden;animation:fup .8s .12s ease both}
+.sb{flex:1;min-width:110px;padding:1.2rem 1rem;text-align:center;border-right:1px solid var(--bd);transition:background .2s}
+.sb:last-child{border-right:none}
+.sb:hover{background:var(--sf2)}
+.sn{font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;background:linear-gradient(135deg,var(--vl),var(--el));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sl{font-size:.6rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;margin-top:.12rem}
+/* SECTION */
+.sec{margin-bottom:4rem}
+.slbl{display:flex;align-items:center;gap:.6rem;font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;color:var(--tx3);margin-bottom:1.4rem}
+.slbl::after{content:'';flex:1;height:1px;background:var(--bd)}
+/* ACTION CARDS */
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+@media(max-width:640px){.ag{grid-template-columns:1fr}}
+.ac{background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:1.75rem;position:relative;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s,background .35s;cursor:pointer;animation:fup .8s .2s ease both}
+.ac:hover{transform:translateY(-5px)}
+.vc:hover{border-color:rgba(124,58,237,.5);box-shadow:0 20px 60px var(--vg)}
+.ec:hover{border-color:rgba(16,185,129,.5);box-shadow:0 20px 60px var(--eg)}
+.astr{position:absolute;top:0;left:0;right:0;height:3px;border-radius:18px 18px 0 0}
+.vc .astr{background:linear-gradient(90deg,var(--v),var(--vl))}
+.ec .astr{background:linear-gradient(90deg,var(--e),var(--el))}
+.acn{position:absolute;top:1rem;right:1rem;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .5rem;border-radius:5px}
+.vc .acn{background:rgba(124,58,237,.12);color:var(--vl);border:1px solid rgba(124,58,237,.2)}
+.ec .acn{background:rgba(16,185,129,.1);color:var(--el);border:1px solid rgba(16,185,129,.2)}
+.aic{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;margin-bottom:1rem}
+.vc .aic{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2)}
+.ec .aic{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2)}
+.att{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;margin-bottom:.35rem}
+.vc .att{color:var(--vl)}
+.ec .att{color:var(--el)}
+.adc{font-size:.8rem;color:var(--tx2);line-height:1.65;margin-bottom:1.25rem}
+.afs{display:flex;flex-direction:column;gap:.38rem;margin-bottom:1.3rem}
+.af{display:flex;align-items:center;gap:.45rem;font-size:.73rem;color:var(--tx2)}
+.afd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.vc .afd{background:var(--vl)}
+.ec .afd{background:var(--el)}
+/* FLOWCHART */
+.fcs{margin-bottom:4rem;animation:fup .8s .28s ease both}
+.fct{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.ft{font-size:.7rem;font-weight:500;padding:.32rem .82rem;border-radius:8px;border:1px solid var(--bd);color:var(--tx2);cursor:pointer;transition:all .2s;white-space:nowrap;background:var(--sf)}
+.ft:hover,.ft.on{background:linear-gradient(135deg,var(--v),#5b21b6);color:#fff;border-color:var(--v)}
+.fb{background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:1.75rem;overflow-x:auto;min-height:380px;display:flex;align-items:center;justify-content:center}
+.fp{display:none}
+.fp.on{display:flex;align-items:center;justify-content:center;width:100%}
+.fsvg{width:100%;max-width:920px;height:auto}
+.nst rect{fill:rgba(124,58,237,.12);stroke:var(--v);stroke-width:1.8}
+.nen rect{fill:rgba(16,185,129,.12);stroke:var(--e);stroke-width:1.8}
+.npc rect{fill:var(--sf2);stroke:var(--bd2);stroke-width:1.4}
+.ndc polygon{fill:rgba(245,158,11,.08);stroke:var(--am);stroke-width:1.4}
+.naw rect{fill:rgba(245,158,11,.08);stroke:var(--am);stroke-width:1.4}
+.ndb rect{fill:rgba(16,185,129,.07);stroke:var(--e);stroke-width:1.4}
+.fth{font-family:'Syne',sans-serif;font-size:11.5px;font-weight:700;fill:var(--tx)}
+.fts{font-family:'DM Sans',sans-serif;font-size:9.5px;fill:var(--tx2)}
+.fa0{stroke:var(--tx3);stroke-width:1.4;fill:none}
+.fav{stroke:var(--vl);stroke-width:1.4;fill:none}
+.fae{stroke:var(--el);stroke-width:1.4;fill:none}
+/* HOW IT WORKS */
+.hg{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media(max-width:640px){.hg{grid-template-columns:1fr}}
+.hc2{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:1.4rem;transition:background .35s,transform .2s}
+.hc2:hover{transform:translateY(-3px)}
+.hn{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,var(--vl),var(--el));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:.55rem;opacity:.35}
+.ht{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;margin-bottom:.3rem}
+.hd{font-size:.76rem;color:var(--tx2);line-height:1.65}
+/* UPDATES */
+.ug{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:640px){.ug{grid-template-columns:1fr}}
+.uc{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:1.2rem 1.4rem;display:flex;align-items:flex-start;gap:.9rem;transition:background .35s,border-color .22s,transform .2s}
+.uc:hover{transform:translateY(-3px);border-color:var(--bd2)}
+.ui2{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.iv{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.2)}
+.ie{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2)}
+.ia{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2)}
+.ir{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2)}
+.utp{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);margin-bottom:.2rem}
+.uti{font-size:.83rem;font-weight:600;color:var(--tx);margin-bottom:.18rem}
+.udc{font-size:.73rem;color:var(--tx2);line-height:1.6}
+.utg{display:inline-block;font-size:.56rem;padding:.12rem .42rem;border-radius:4px;margin-top:.35rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.tfe{background:rgba(124,58,237,.12);color:var(--vl)}
+.tbe{background:rgba(16,185,129,.1);color:var(--el)}
+.tml{background:rgba(245,158,11,.1);color:var(--al)}
+.tdv{background:rgba(244,63,94,.1);color:#fb7185}
+/* TECH */
+.tw{display:flex;flex-wrap:wrap;gap:.55rem}
+.tc{display:flex;align-items:center;gap:.35rem;background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:.42rem .85rem;font-size:.73rem;color:var(--tx2);transition:all .2s;cursor:default}
+.tc:hover{border-color:var(--vl);color:var(--vl);background:rgba(124,58,237,.06);transform:translateY(-2px)}
+/* FOOTER */
+footer{border-top:1px solid var(--bd);background:var(--sf);transition:background .35s,border-color .35s}
+.fi{max-width:1080px;margin:0 auto;padding:1.6rem 1.5rem;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+.ftg{font-size:.7rem;color:var(--tx3);margin-top:.25rem}
+.fls{display:flex;gap:.9rem;flex-wrap:wrap;align-items:center}
+.fl{display:flex;align-items:center;gap:.3rem;font-size:.73rem;color:var(--tx2);text-decoration:none;transition:color .2s}
+.fl:hover{color:var(--vl)}
+.fb2{border-top:1px solid var(--bd);padding:.7rem 1.5rem;text-align:center;font-size:.66rem;color:var(--tx3);transition:border-color .35s}
+.fb2 a{color:var(--vl);text-decoration:none}
+/* TOAST */
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;z-index:999;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:.82rem 1.25rem;display:flex;align-items:center;gap:.55rem;font-size:.78rem;box-shadow:var(--shd);transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s,background .35s;max-width:270px;pointer-events:none}
+.toast.on{transform:translateY(0);opacity:1}
+.td{width:7px;height:7px;border-radius:50%;background:var(--e);flex-shrink:0;animation:pls 1.5s ease infinite}
+.spn{width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;display:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes fup{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:768px){.hero{padding:3.5rem 0 2.5rem}.sb{min-width:80px;padding:1rem .7rem}.sn{font-size:1.3rem}}
+@media(max-width:480px){.nbg{display:none}.nls{display:none}.hero h1{font-size:1.8rem}.fb{padding:1rem}.fi{flex-direction:column}}
+@media(max-width:360px){.hc{flex-direction:column}.btn{width:100%;justify-content:center}}
+</style>
 </head>
 <body>
-<!-- partial:index.partial.html -->
-<div class="login-box">
-  <h2>Spam Ham Detector</h2>
-  <form>
+<canvas id="bgc"></canvas>
+<div class="wrap">
+<nav>
+  <div class="ni">
+    <a class="br" href="#">
+      <div class="bi">🛡️</div>
+      <div class="bn">MailGuard AI</div>
+    </a>
+    <div class="nr">
+      <div class="nbg">v1.0 · SVM · 97.2%</div>
+      <div class="nls">
+        <a class="nl" href="#fc">Pipeline</a>
+        <a class="nl" href="#upd">Updates</a>
+        <a class="nl" href="https://github.com/ayush-05-ad/spam-detection" target="_blank">GitHub</a>
+      </div>
+      <div class="tb" onclick="tgl()" title="Toggle theme"><div class="tk" id="knob">🌙</div></div>
+    </div>
+  </div>
+</nav>
 
-    
-    <button id = "training" onclick="myFunction"  href="/train">
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-       Train Model
-    </button>
+<main>
+<div class="con">
 
-    <!-- <button         onclick="window.open('/predict'), '_self' " > -->
-      <button onclick = "window.open('/predict', 'prediction tab')">
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-       SpamHam Detector
-    </button>
-  </form>
- 
-  <footer class="footer">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hbg"><span class="hbd"></span> AI · NLP · Machine Learning · Live on AWS EC2</div>
+    <h1>Detect Spam.<br><span class="gr">Protect Inboxes.</span><br>Intelligently.</h1>
+    <p class="hs">Enterprise-grade spam detection powered by Support Vector Machine &amp; TF-IDF — 97.20% accuracy on 10,162 real-world messages.</p>
+    <div class="hc">
+      <a class="btn bs" href="/predict">🔍 Try Detector</a>
+      <a class="btn bp" href="/train">⚙️ Train Model</a>
+      <a class="btn bg2" href="https://github.com/ayush-05-ad/spam-detection" target="_blank">🐙 GitHub</a>
+    </div>
+  </div>
 
-    <h4>Copyright &copy; <a style="color: #ffffff;" href = "https://github.com/ayush-deep-05">Ayush Deep</a></h4>
+  <!-- STATS -->
+  <div class="ss">
+    <div class="sb"><div class="sn">97.2%</div><div class="sl">Accuracy</div></div>
+    <div class="sb"><div class="sn">10,162</div><div class="sl">Training Msgs</div></div>
+    <div class="sb"><div class="sn">SVM</div><div class="sl">Algorithm</div></div>
+    <div class="sb"><div class="sn">TF-IDF</div><div class="sl">Vectorizer</div></div>
+    <div class="sb"><div class="sn" id="scnt">0</div><div class="sl">Scans Today</div></div>
+  </div>
 
-  </footer>
+  <!-- ACTION CARDS -->
+  <div class="sec">
+    <div class="slbl">⚡ Quick Actions</div>
+    <div class="ag">
+      <div class="ac ec" onclick="goDet()">
+        <div class="astr"></div><div class="acn">Live</div>
+        <div class="aic">🔍</div>
+        <div class="att">Spam Detector</div>
+        <div class="adc">Paste any email, SMS or message and get instant AI-powered spam/ham classification in under 1 second.</div>
+        <div class="afs">
+          <div class="af"><div class="afd"></div>Real-time SVM classification</div>
+          <div class="af"><div class="afd"></div>TF-IDF text vectorization</div>
+          <div class="af"><div class="afd"></div>Results saved to MongoDB</div>
+        </div>
+        <button class="btn bs" style="pointer-events:none">
+          <div class="spn" id="ds"></div><span id="dt">Open Detector →</span>
+        </button>
+      </div>
+      <div class="ac vc" onclick="goTrn()">
+        <div class="astr"></div><div class="acn">Pipeline</div>
+        <div class="aic">⚙️</div>
+        <div class="att">Train Model</div>
+        <div class="adc">Retrain the full ML pipeline — ingestion, validation, transformation, training — and auto-push weights to AWS S3.</div>
+        <div class="afs">
+          <div class="af"><div class="afd"></div>Pulls data from MongoDB Atlas</div>
+          <div class="af"><div class="afd"></div>GridSearchCV hyperparameter tuning</div>
+          <div class="af"><div class="afd"></div>Auto-uploads .pkl to AWS S3</div>
+        </div>
+        <button class="btn bp" style="pointer-events:none">
+          <div class="spn" id="ts"></div><span id="tt">Launch Training →</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOWCHART -->
+  <div class="sec fcs" id="fc">
+    <div class="slbl">🔄 ML Pipeline Flowcharts</div>
+    <div class="fct">
+      <div class="ft on" onclick="sfc(0)">Full Pipeline</div>
+      <div class="ft" onclick="sfc(1)">Data Ingestion</div>
+      <div class="ft" onclick="sfc(2)">Transformation</div>
+      <div class="ft" onclick="sfc(3)">Model Training</div>
+      <div class="ft" onclick="sfc(4)">Prediction Flow</div>
+    </div>
+    <div class="fb">
+      <!-- Panel 0 -->
+      <div class="fp on" id="p0">
+        <svg class="fsvg" viewBox="0 0 880 440" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="m0" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--tx3)"/></marker>
+            <marker id="mv" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--vl)"/></marker>
+            <marker id="me" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--el)"/></marker>
+          </defs>
+          <g class="ndb" transform="translate(12,32)"><rect width="118" height="48" rx="8"/><text class="fth" x="59" y="22" text-anchor="middle">🍃 MongoDB</text><text class="fts" x="59" y="37" text-anchor="middle">Raw Data Source</text></g>
+          <line class="fa0" x1="130" y1="56" x2="165" y2="56" marker-end="url(#m0)"/>
+          <g class="npc" transform="translate(165,24)"><rect width="118" height="64" rx="8"/><text class="fth" x="59" y="23" text-anchor="middle">Data Ingestion</text><text class="fts" x="59" y="38" text-anchor="middle">Fetch, store &amp;</text><text class="fts" x="59" y="51" text-anchor="middle">split artifacts</text></g>
+          <line class="fa0" x1="283" y1="56" x2="318" y2="56" marker-end="url(#m0)"/>
+          <g class="npc" transform="translate(318,24)"><rect width="118" height="64" rx="8"/><text class="fth" x="59" y="23" text-anchor="middle">Data Validation</text><text class="fts" x="59" y="38" text-anchor="middle">Schema check</text><text class="fts" x="59" y="51" text-anchor="middle">drift detection</text></g>
+          <line class="fa0" x1="436" y1="56" x2="471" y2="56" marker-end="url(#m0)"/>
+          <g class="npc" transform="translate(471,24)"><rect width="118" height="64" rx="8"/><text class="fth" x="59" y="23" text-anchor="middle">Transformation</text><text class="fts" x="59" y="38" text-anchor="middle">Clean→Stem</text><text class="fts" x="59" y="51" text-anchor="middle">TF-IDF encode</text></g>
+          <line class="fa0" x1="589" y1="56" x2="624" y2="56" marker-end="url(#m0)"/>
+          <g class="npc" transform="translate(624,24)"><rect width="118" height="64" rx="8"/><text class="fth" x="59" y="23" text-anchor="middle">Model Trainer</text><text class="fts" x="59" y="38" text-anchor="middle">SVM+GridSearch</text><text class="fts" x="59" y="51" text-anchor="middle">CV tuning</text></g>
+          <line class="fa0" x1="742" y1="56" x2="777" y2="56" marker-end="url(#m0)"/>
+          <g class="npc" transform="translate(777,24)"><rect width="90" height="64" rx="8"/><text class="fth" x="45" y="23" text-anchor="middle">Evaluator</text><text class="fts" x="45" y="38" text-anchor="middle">Accuracy</text><text class="fts" x="45" y="51" text-anchor="middle">F1 Score</text></g>
+          <line class="fa0" x1="822" y1="88" x2="822" y2="155" marker-end="url(#m0)"/>
+          <g class="ndc" transform="translate(715,155)"><polygon points="107,0 214,28 107,56 0,28"/><text class="fth" x="107" y="22" text-anchor="middle">Accuracy OK?</text><text class="fts" x="107" y="38" text-anchor="middle">&gt; threshold</text></g>
+          <line class="fae" x1="715" y1="183" x2="648" y2="183" marker-end="url(#me)"/>
+          <text class="fts" x="680" y="177" text-anchor="middle" fill="var(--el)">YES</text>
+          <g class="naw" transform="translate(528,162)"><rect width="118" height="42" rx="8"/><text class="fth" x="59" y="19" text-anchor="middle">🪣 Model Pusher</text><text class="fts" x="59" y="33" text-anchor="middle">Upload .pkl → S3</text></g>
+          <line class="fae" x1="528" y1="183" x2="458" y2="183" marker-end="url(#me)"/>
+          <g class="nen" transform="translate(338,163)"><rect width="118" height="40" rx="20"/><text class="fth" x="59" y="18" text-anchor="middle">✅ Deploy EC2</text><text class="fts" x="59" y="32" text-anchor="middle">Flask API live</text></g>
+          <line class="fa0" x1="822" y1="211" x2="822" y2="278" marker-end="url(#m0)"/>
+          <text class="fts" x="833" y="248" fill="var(--rs)">NO</text>
+          <g class="npc" transform="translate(663,278)"><rect width="220" height="42" rx="8"/><text class="fth" x="110" y="18" text-anchor="middle">🔁 Re-train New Params</text><text class="fts" x="110" y="33" text-anchor="middle">Adjust hyperparameters</text></g>
+          <path class="fa0" d="M663,299 Q600,299 600,198 Q600,56 742,56" marker-end="url(#m0)"/>
+          <line class="fae" x1="338" y1="183" x2="258" y2="183" marker-end="url(#me)"/>
+          <g class="npc" transform="translate(138,162)"><rect width="118" height="42" rx="8"/><text class="fth" x="59" y="18" text-anchor="middle">👤 User Input</text><text class="fts" x="59" y="33" text-anchor="middle">Any message</text></g>
+          <line class="fae" x1="138" y1="183" x2="96" y2="183" marker-end="url(#me)"/>
+          <g class="npc" transform="translate(14,162)"><rect width="80" height="42" rx="8"/><text class="fth" x="40" y="18" text-anchor="middle">Preprocess</text><text class="fts" x="40" y="33" text-anchor="middle">+TF-IDF</text></g>
+          <line class="fae" x1="54" y1="204" x2="54" y2="268" marker-end="url(#me)"/>
+          <g class="npc" transform="translate(14,268)"><rect width="80" height="42" rx="8"/><text class="fth" x="40" y="18" text-anchor="middle">SVM Predict</text><text class="fts" x="40" y="33" text-anchor="middle">Load S3 pkl</text></g>
+          <line class="fae" x1="94" y1="289" x2="138" y2="289" marker-end="url(#me)"/>
+          <g class="nst" transform="translate(138,272)"><rect width="100" height="34" rx="17"/><text class="fth" x="50" y="15" text-anchor="middle">🔴 SPAM</text><text class="fts" x="50" y="28" text-anchor="middle">or 🟢 HAM</text></g>
+          <line class="fae" x1="238" y1="289" x2="285" y2="289" marker-end="url(#me)"/>
+          <g class="ndb" transform="translate(285,272)"><rect width="118" height="34" rx="8"/><text class="fth" x="59" y="15" text-anchor="middle">🍃 Save Result</text><text class="fts" x="59" y="28" text-anchor="middle">MongoDB Atlas</text></g>
+        </svg>
+      </div>
+
+      <!-- Panel 1: Data Ingestion -->
+      <div class="fp" id="p1">
+        <svg class="fsvg" viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="m1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--tx3)"/></marker><marker id="me1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--el)"/></marker><marker id="mv1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--vl)"/></marker></defs>
+          <g class="ndb" transform="translate(14,100)"><rect width="118" height="50" rx="8"/><text class="fth" x="59" y="22" text-anchor="middle">🍃 MongoDB</text><text class="fts" x="59" y="38" text-anchor="middle">spam_ham collection</text></g>
+          <line class="fa0" x1="132" y1="125" x2="170" y2="125" marker-end="url(#m1)"/>
+          <g class="npc" transform="translate(170,100)"><rect width="125" height="50" rx="8"/><text class="fth" x="62" y="22" text-anchor="middle">Fetch Data</text><text class="fts" x="62" y="36" text-anchor="middle">pandas DataFrame</text><text class="fts" x="62" y="49" text-anchor="middle">10,162 rows</text></g>
+          <line class="fa0" x1="295" y1="125" x2="333" y2="125" marker-end="url(#m1)"/>
+          <g class="npc" transform="translate(333,100)"><rect width="125" height="50" rx="8"/><text class="fth" x="62" y="22" text-anchor="middle">Validate Schema</text><text class="fts" x="62" y="36" text-anchor="middle">label + message</text><text class="fts" x="62" y="49" text-anchor="middle">columns check</text></g>
+          <line class="fa0" x1="458" y1="125" x2="496" y2="125" marker-end="url(#m1)"/>
+          <g class="npc" transform="translate(496,100)"><rect width="125" height="50" rx="8"/><text class="fth" x="62" y="22" text-anchor="middle">Train/Test Split</text><text class="fts" x="62" y="36" text-anchor="middle">80% train (8129)</text><text class="fts" x="62" y="49" text-anchor="middle">20% test (2033)</text></g>
+          <line class="fa0" x1="621" y1="125" x2="658" y2="125" marker-end="url(#m1)"/>
+          <g class="nen" transform="translate(658,110)"><rect width="48" height="30" rx="15"/><text class="fth" x="24" y="20" text-anchor="middle">✓</text></g>
+          <line class="fae" x1="395" y1="150" x2="395" y2="195" marker-end="url(#me1)"/>
+          <line class="fav" x1="558" y1="150" x2="558" y2="195" marker-end="url(#mv1)"/>
+          <g transform="translate(333,195)"><rect width="125" height="34" rx="7" fill="rgba(16,185,129,.07)" stroke="rgba(16,185,129,.25)" stroke-width="1"/><text class="fts" x="62" y="14" text-anchor="middle" fill="var(--el)">📄 train.csv saved</text><text class="fts" x="62" y="27" text-anchor="middle">Feature artifacts</text></g>
+          <g transform="translate(496,195)"><rect width="125" height="34" rx="7" fill="rgba(124,58,237,.07)" stroke="rgba(124,58,237,.25)" stroke-width="1"/><text class="fts" x="62" y="14" text-anchor="middle" fill="var(--vl)">📄 test.csv saved</text><text class="fts" x="62" y="27" text-anchor="middle">Evaluation set</text></g>
+        </svg>
+      </div>
+
+      <!-- Panel 2: Transformation -->
+      <div class="fp" id="p2">
+        <svg class="fsvg" viewBox="0 0 860 280" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="m2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--tx3)"/></marker></defs>
+          <g class="nst" transform="translate(10,115)"><rect width="95" height="44" rx="22"/><text class="fth" x="47" y="20" text-anchor="middle">Raw Text</text><text class="fts" x="47" y="34" text-anchor="middle">Input message</text></g>
+          <line class="fa0" x1="105" y1="137" x2="135" y2="137" marker-end="url(#m2)"/>
+          <g class="npc" transform="translate(135,112)"><rect width="106" height="50" rx="8"/><text class="fth" x="53" y="21" text-anchor="middle">① Regex Clean</text><text class="fts" x="53" y="34" text-anchor="middle">Remove special</text><text class="fts" x="53" y="46" text-anchor="middle">chars &amp; digits</text></g>
+          <line class="fa0" x1="241" y1="137" x2="271" y2="137" marker-end="url(#m2)"/>
+          <g class="npc" transform="translate(271,112)"><rect width="106" height="50" rx="8"/><text class="fth" x="53" y="21" text-anchor="middle">② Lowercase</text><text class="fts" x="53" y="34" text-anchor="middle">Normalize all</text><text class="fts" x="53" y="46" text-anchor="middle">to lower case</text></g>
+          <line class="fa0" x1="377" y1="137" x2="407" y2="137" marker-end="url(#m2)"/>
+          <g class="npc" transform="translate(407,112)"><rect width="106" height="50" rx="8"/><text class="fth" x="53" y="21" text-anchor="middle">③ Tokenize</text><text class="fts" x="53" y="34" text-anchor="middle">Split into</text><text class="fts" x="53" y="46" text-anchor="middle">word tokens</text></g>
+          <line class="fa0" x1="513" y1="137" x2="543" y2="137" marker-end="url(#m2)"/>
+          <g class="npc" transform="translate(543,112)"><rect width="110" height="50" rx="8"/><text class="fth" x="55" y="21" text-anchor="middle">④ Stopwords</text><text class="fts" x="55" y="34" text-anchor="middle">Remove NLTK</text><text class="fts" x="55" y="46" text-anchor="middle">stopwords</text></g>
+          <line class="fa0" x1="653" y1="137" x2="683" y2="137" marker-end="url(#m2)"/>
+          <g class="npc" transform="translate(683,112)"><rect width="100" height="50" rx="8"/><text class="fth" x="50" y="21" text-anchor="middle">⑤ Stemming</text><text class="fts" x="50" y="34" text-anchor="middle">PorterStemmer</text><text class="fts" x="50" y="46" text-anchor="middle">root words</text></g>
+          <line class="fa0" x1="783" y1="137" x2="815" y2="137" marker-end="url(#m2)"/>
+          <g class="nen" transform="translate(815,120)"><rect width="30" height="34" rx="12"/><text class="fth" x="15" y="22" text-anchor="middle">↓</text></g>
+          <g transform="translate(295,210)"><rect width="270" height="48" rx="10" fill="rgba(124,58,237,.1)" stroke="rgba(124,58,237,.3)" stroke-width="1.5"/><text class="fth" x="135" y="22" text-anchor="middle" fill="var(--vl)">TF-IDF Matrix Output</text><text class="fts" x="135" y="37" text-anchor="middle">Shape: (10162, 3000) — max_features=3000</text></g>
+          <line class="fa0" x1="830" y1="154" x2="830" y2="234" marker-end="url(#m2)"/>
+          <path class="fa0" d="M830,234 Q830,258 565,258" marker-end="url(#m2)"/>
+        </svg>
+      </div>
+
+      <!-- Panel 3: Model Training -->
+      <div class="fp" id="p3">
+        <svg class="fsvg" viewBox="0 0 860 390" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="m3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--tx3)"/></marker><marker id="me3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--el)"/></marker></defs>
+          <g class="nst" transform="translate(10,28)"><rect width="115" height="44" rx="22"/><text class="fth" x="57" y="20" text-anchor="middle">TF-IDF Matrix</text><text class="fts" x="57" y="34" text-anchor="middle">(10162 × 3000)</text></g>
+          <line class="fa0" x1="125" y1="50" x2="158" y2="50" marker-end="url(#m3)"/>
+          <g class="npc" transform="translate(158,22)"><rect width="128" height="56" rx="8"/><text class="fth" x="64" y="22" text-anchor="middle">4 Models Tried</text><text class="fts" x="64" y="36" text-anchor="middle">GaussNB, MultiNB,</text><text class="fts" x="64" y="49" text-anchor="middle">LogReg, SVM</text></g>
+          <line class="fa0" x1="286" y1="50" x2="319" y2="50" marker-end="url(#m3)"/>
+          <g class="npc" transform="translate(319,22)"><rect width="128" height="56" rx="8"/><text class="fth" x="64" y="22" text-anchor="middle">GridSearchCV</text><text class="fts" x="64" y="36" text-anchor="middle">5-fold cross</text><text class="fts" x="64" y="49" text-anchor="middle">validation</text></g>
+          <line class="fa0" x1="447" y1="50" x2="480" y2="50" marker-end="url(#m3)"/>
+          <g class="npc" transform="translate(480,22)"><rect width="128" height="56" rx="8"/><text class="fth" x="64" y="22" text-anchor="middle">Best Selected</text><text class="fts" x="64" y="36" text-anchor="middle">SVM linear kernel</text><text class="fts" x="64" y="49" text-anchor="middle">C=1.0</text></g>
+          <line class="fa0" x1="608" y1="50" x2="641" y2="50" marker-end="url(#m3)"/>
+          <g class="naw" transform="translate(641,28)"><rect width="118" height="44" rx="8"/><text class="fth" x="59" y="20" text-anchor="middle">🪣 S3 Upload</text><text class="fts" x="59" y="34" text-anchor="middle">model.pkl + tfidf.pkl</text></g>
+          <!-- Comparison table -->
+          <g transform="translate(14,110)">
+            <rect width="830" height="258" rx="12" fill="var(--sf2)" stroke="var(--bd2)" stroke-width="1.2"/>
+            <text class="fth" x="415" y="26" text-anchor="middle" fill="var(--vl)" font-size="13">📊 Model Performance Comparison</text>
+            <rect x="6" y="35" width="818" height="26" rx="6" fill="var(--sf3)"/>
+            <text class="fts" x="100" y="52" text-anchor="middle" font-weight="700" fill="var(--tx)">Model</text>
+            <text class="fts" x="280" y="52" text-anchor="middle" font-weight="700" fill="var(--tx)">Accuracy</text>
+            <text class="fts" x="460" y="52" text-anchor="middle" font-weight="700" fill="var(--tx)">False Positives</text>
+            <text class="fts" x="640" y="52" text-anchor="middle" font-weight="700" fill="var(--tx)">False Negatives</text>
+            <text class="fts" x="780" y="52" text-anchor="middle" font-weight="700" fill="var(--tx)">Verdict</text>
+            <text class="fts" x="100" y="86" text-anchor="middle" fill="var(--tx2)">GaussianNB</text>
+            <text class="fts" x="280" y="86" text-anchor="middle" fill="var(--tx2)">85.83%</text>
+            <text class="fts" x="460" y="86" text-anchor="middle" fill="var(--rs)">247 ❌</text>
+            <text class="fts" x="640" y="86" text-anchor="middle" fill="var(--tx2)">41</text>
+            <text class="fts" x="780" y="86" text-anchor="middle" fill="var(--tx3)">Poor</text>
+            <line x1="6" y1="98" x2="824" y2="98" stroke="var(--bd)" stroke-width=".6"/>
+            <text class="fts" x="100" y="120" text-anchor="middle" fill="var(--tx2)">MultinomialNB</text>
+            <text class="fts" x="280" y="120" text-anchor="middle" fill="var(--tx2)">94.79%</text>
+            <text class="fts" x="460" y="120" text-anchor="middle" fill="var(--tx2)">38</text>
+            <text class="fts" x="640" y="120" text-anchor="middle" fill="var(--tx2)">68</text>
+            <text class="fts" x="780" y="120" text-anchor="middle" fill="var(--tx3)">Good</text>
+            <line x1="6" y1="132" x2="824" y2="132" stroke="var(--bd)" stroke-width=".6"/>
+            <text class="fts" x="100" y="154" text-anchor="middle" fill="var(--tx2)">Logistic Reg</text>
+            <text class="fts" x="280" y="154" text-anchor="middle" fill="var(--tx2)">94.93%</text>
+            <text class="fts" x="460" y="154" text-anchor="middle" fill="var(--tx2)">11</text>
+            <text class="fts" x="640" y="154" text-anchor="middle" fill="var(--tx2)">92</text>
+            <text class="fts" x="780" y="154" text-anchor="middle" fill="var(--tx3)">Good</text>
+            <line x1="6" y1="166" x2="824" y2="166" stroke="var(--bd)" stroke-width=".6"/>
+            <rect x="6" y="174" width="818" height="30" rx="6" fill="rgba(16,185,129,.08)" stroke="rgba(16,185,129,.25)" stroke-width="1"/>
+            <text class="fts" x="100" y="194" text-anchor="middle" font-weight="700" fill="var(--el)">✅ SVM Linear</text>
+            <text class="fts" x="280" y="194" text-anchor="middle" font-weight="700" fill="var(--el)">97.20%</text>
+            <text class="fts" x="460" y="194" text-anchor="middle" fill="var(--el)">17 ✓</text>
+            <text class="fts" x="640" y="194" text-anchor="middle" fill="var(--el)">40 ✓</text>
+            <text class="fts" x="780" y="194" text-anchor="middle" fill="var(--el)">🏆 Best</text>
+            <text class="fts" x="415" y="238" text-anchor="middle" fill="var(--tx3)">SVM selected — lowest overall error, highest accuracy on 2033-sample test set</text>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Panel 4: Prediction -->
+      <div class="fp" id="p4">
+        <svg class="fsvg" viewBox="0 0 860 320" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="m4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--tx3)"/></marker><marker id="me4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--el)"/></marker></defs>
+          <g class="nst" transform="translate(10,128)"><rect width="100" height="44" rx="22"/><text class="fth" x="50" y="20" text-anchor="middle">👤 User</text><text class="fts" x="50" y="34" text-anchor="middle">Enters message</text></g>
+          <line class="fae" x1="110" y1="150" x2="148" y2="150" marker-end="url(#me4)"/>
+          <g class="npc" transform="translate(148,124)"><rect width="115" height="52" rx="8"/><text class="fth" x="57" y="21" text-anchor="middle">Flask /predict</text><text class="fts" x="57" y="35" text-anchor="middle">POST JSON</text><text class="fts" x="57" y="48" text-anchor="middle">request</text></g>
+          <line class="fae" x1="263" y1="150" x2="301" y2="150" marker-end="url(#me4)"/>
+          <g class="npc" transform="translate(301,124)"><rect width="115" height="52" rx="8"/><text class="fth" x="57" y="21" text-anchor="middle">Preprocess</text><text class="fts" x="57" y="35" text-anchor="middle">Regex→lower</text><text class="fts" x="57" y="48" text-anchor="middle">→stem→TF-IDF</text></g>
+          <line class="fae" x1="416" y1="150" x2="454" y2="150" marker-end="url(#me4)"/>
+          <g class="naw" transform="translate(454,124)"><rect width="115" height="52" rx="8"/><text class="fth" x="57" y="21" text-anchor="middle">☁️ Load Model</text><text class="fts" x="57" y="35" text-anchor="middle">AWS S3 bucket</text><text class="fts" x="57" y="48" text-anchor="middle">model.pkl</text></g>
+          <line class="fae" x1="569" y1="150" x2="607" y2="150" marker-end="url(#me4)"/>
+          <g class="ndc" transform="translate(607,126)"><polygon points="110,0 220,24 110,48 0,24"/><text class="fth" x="110" y="19" text-anchor="middle">Spam?</text><text class="fts" x="110" y="33" text-anchor="middle">SVM output</text></g>
+          <line class="fa0" x1="717" y1="126" x2="800" y2="78" marker-end="url(#m4)"/>
+          <text class="fts" x="764" y="99" fill="var(--rs)">YES</text>
+          <g transform="translate(745,38)"><rect width="100" height="36" rx="18" fill="rgba(244,63,94,.15)" stroke="var(--rs)" stroke-width="1.5"/><text class="fth" x="50" y="16" text-anchor="middle" fill="var(--rs)">🔴 SPAM</text><text class="fts" x="50" y="29" text-anchor="middle">Alert shown</text></g>
+          <line class="fae" x1="717" y1="174" x2="800" y2="222" marker-end="url(#me4)"/>
+          <text class="fts" x="764" y="206" fill="var(--el)">NO</text>
+          <g transform="translate(745,223)"><rect width="100" height="36" rx="18" fill="rgba(16,185,129,.12)" stroke="var(--e)" stroke-width="1.5"/><text class="fth" x="50" y="16" text-anchor="middle" fill="var(--el)">🟢 HAM</text><text class="fts" x="50" y="29" text-anchor="middle">Safe message</text></g>
+          <path class="fa0" d="M795,241 Q795,286 640,286 Q475,286 416,286" marker-end="url(#m4)"/>
+          <g class="ndb" transform="translate(298,268)"><rect width="118" height="36" rx="8"/><text class="fth" x="59" y="15" text-anchor="middle">🍃 Save Result</text><text class="fts" x="59" y="28" text-anchor="middle">MongoDB + timestamp</text></g>
+          <defs><marker id="fae" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="var(--el)"/></marker></defs>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="sec">
+    <div class="slbl">💡 How It Works</div>
+    <div class="hg">
+      <div class="hc2"><div class="hn">01</div><div class="ht">Input Your Message</div><div class="hd">Paste any email, SMS, or text message into the detector. Supports any length of text.</div></div>
+      <div class="hc2"><div class="hn">02</div><div class="ht">AI Preprocessing</div><div class="hd">Text is cleaned, lowercased, stop words removed, Porter-stemmed, then converted to a 3000-feature TF-IDF vector.</div></div>
+      <div class="hc2"><div class="hn">03</div><div class="ht">SVM Classification</div><div class="hd">The linear-kernel SVM model (loaded from AWS S3) classifies the message with 97.2% accuracy in under 1 second.</div></div>
+    </div>
+  </div>
+
+  <!-- SUGGESTED UPDATES -->
+  <div class="sec" id="upd">
+    <div class="slbl">🚀 Suggested Improvements by Claude</div>
+    <div class="ug">
+      <div class="uc"><div class="ui2 iv">💅</div><div><div class="utp">Frontend</div><div class="uti">Prediction Page Redesign</div><div class="udc">prediction.html ko bhi isi theme mein update karo — SPAM/HAM result bold card mein dikhao with confidence %, copy button aur share option.</div><span class="utg tfe">High Priority</span></div></div>
+      <div class="uc"><div class="ui2 ie">📊</div><div><div class="utp">Backend</div><div class="uti">Prediction History API</div><div class="udc">MongoDB se last 10 predictions fetch karne ka endpoint banao — /api/history — aur sidebar mein dikhao with timestamps.</div><span class="utg tbe">Recommended</span></div></div>
+      <div class="uc"><div class="ui2 ia">🤖</div><div><div class="utp">ML Upgrade</div><div class="uti">Confidence Score</div><div class="udc">SVM ke decision_function score se confidence % nikalo aur result mein "87% confident this is SPAM" dikhao.</div><span class="utg tml">Enhancement</span></div></div>
+      <div class="uc"><div class="ui2 ir">🐳</div><div><div class="utp">DevOps</div><div class="uti">GitHub Actions CI/CD</div><div class="udc">Auto-deploy to EC2 on every push to main. Dockerfile already hai — sirf .github/workflows/deploy.yml banana hai.</div><span class="utg tdv">Pending</span></div></div>
+      <div class="uc"><div class="ui2 iv">📂</div><div><div class="utp">Frontend</div><div class="uti">Bulk CSV Scanner</div><div class="udc">CSV upload feature — multiple messages ek saath scan karo aur results CSV mein download karo. Businesses ke liye useful.</div><span class="utg tfe">New Feature</span></div></div>
+      <div class="uc"><div class="ui2 ie">🔐</div><div><div class="utp">Backend</div><div class="uti">Rate Limiting + Security</div><div class="udc">Flask-Limiter se API abuse rokho. Optional: JWT auth add karo taaki production mein unauthorized access na ho.</div><span class="utg tbe">Security</span></div></div>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="sec">
+    <div class="slbl">🛠️ Tech Stack</div>
+    <div class="tw">
+      <div class="tc">🐍 Python 3.9</div><div class="tc">⚡ FastAPI / Flask</div><div class="tc">🤖 Scikit-learn</div>
+      <div class="tc">📊 TF-IDF Vectorizer</div><div class="tc">🧮 SVM Classifier</div><div class="tc">📦 NLTK</div>
+      <div class="tc">🍃 MongoDB Atlas</div><div class="tc">🪣 AWS S3</div><div class="tc">☁️ AWS EC2</div>
+      <div class="tc">🐳 Docker</div><div class="tc">🐙 GitHub Actions</div><div class="tc">🔢 NumPy / Pandas</div>
+    </div>
+  </div>
+
 </div>
-<!-- partial -->
-  
+</main>
+
+<footer>
+  <div class="fi">
+    <div>
+      <a class="br" href="#"><div class="bi" style="width:30px;height:30px;font-size:.85rem">🛡️</div><div class="bn">MailGuard AI</div></a>
+      <div class="ftg">Enterprise spam detection · SVM · TF-IDF · AWS · MongoDB</div>
+    </div>
+    <div class="fls">
+      <a class="fl" href="https://github.com/ayush-05-ad/spam-detection" target="_blank">🐙 GitHub</a>
+      <a class="fl" href="https://www.linkedin.com/in/ayush-deep-0ad05" target="_blank">💼 LinkedIn</a>
+      <a class="fl" href="/predict">🔍 Detector</a>
+      <a class="fl" href="/train">⚙️ Train</a>
+    </div>
+  </div>
+  <div class="fb2">© 2026 <a href="https://www.linkedin.com/in/ayush-deep-0ad05" target="_blank">Ayush Deep</a> &nbsp;·&nbsp; Built with ❤️ using Python · FastAPI · MongoDB · AWS</div>
+</footer>
+</div>
+
+<div class="toast" id="toast"><div class="td"></div><span id="tmsg">MailGuard AI is online</span></div>
+
 <script>
-  function myFunction() {
-    document.getElementById("training").innerHTML = "Prediction started";
-  }
-  </script>
-  
+// Canvas bg
+const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
+let W,H,pts=[];
+function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+rs();window.addEventListener('resize',()=>{rs();pts=mk()});
+function mk(){return Array.from({length:70},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,o:Math.random()*.45+.1}))}
+pts=mk();
+function draw(){
+  cx.clearRect(0,0,W,H);
+  pts.forEach((p,i)=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    cx.fillStyle=`rgba(${i%3===0?'124,58,237':'16,185,129'},${p.o})`;cx.fill();
+    for(let j=i+1;j<pts.length;j++){
+      const d=Math.hypot(p.x-pts[j].x,p.y-pts[j].y);
+      if(d<90){cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(124,58,237,${.07*(1-d/90)})`;cx.lineWidth=.5;cx.stroke()}
+    }
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+// Theme
+function tgl(){const h=document.documentElement,dk=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',dk?'light':'dark');document.getElementById('knob').textContent=dk?'☀️':'🌙';localStorage.setItem('mgt',dk?'light':'dark');showT(dk?'☀️ Light mode':'🌙 Dark mode')}
+(function(){const s=localStorage.getItem('mgt')||'dark';document.documentElement.setAttribute('data-theme',s);document.getElementById('knob').textContent=s==='dark'?'🌙':'☀️'})();
+// Flowchart tabs
+const pn=document.querySelectorAll('.fp'),tb=document.querySelectorAll('.ft');
+function sfc(i){pn.forEach(p=>p.classList.remove('on'));tb.forEach(t=>t.classList.remove('on'));pn[i].classList.add('on');tb[i].classList.add('on')}
+// Scans
+(function(){const k='mgs',t=new Date().toDateString();let d=JSON.parse(localStorage.getItem(k)||'{"date":"","count":0}');if(d.date!==t)d={date:t,count:0};document.getElementById('scnt').textContent=d.count;window._sc=d})();
+function bump(){window._sc.count++;localStorage.setItem('mgs',JSON.stringify(window._sc));document.getElementById('scnt').textContent=window._sc.count}
+// Toast
+function showT(msg,dur=2400){const t=document.getElementById('toast');document.getElementById('tmsg').textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),dur)}
+// Actions
+function goDet(){document.getElementById('ds').style.display='block';document.getElementById('dt').textContent='Loading...';bump();showT('🔍 Opening detector...');setTimeout(()=>location.href='/predict',700)}
+function goTrn(){document.getElementById('ts').style.display='block';document.getElementById('tt').textContent='Starting...';showT('⚙️ Training pipeline launched!',3000);setTimeout(()=>location.href='/train',800)}
+window.addEventListener('load',()=>showT('✅ MailGuard AI is online'));
+</script>
 </body>
 </html>
