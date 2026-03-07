@@ -1,4 +1,5 @@
-MONGODB_URL_KEY = "MONGO_DB_URL"
-AWS_ACCESS_KEY_ID_ENV_KEY = "AWS_ACCESS_KEY_ID"
-AWS_SECRET_ACCESS_KEY_ENV_KEY = "AWS_SECRET_ACCESS_KEY"
-AWS_DEFAULT_REGION = "ap-south-1"
+MONGODB_URL=mongodb+srv://ayushdeep788_db_user:ayush270505@cluster0.revqold.mongodb.net/
+AWS_ACCESS_KEY_ID=yahan_apni_actual_key_daalo
+AWS_SECRET_ACCESS_KEY=yahan_apni_actual_secret_daalo
+AWS_REGION=ap-south-1
+S3_BUCKET_NAME=spam-detection-model-ayush
