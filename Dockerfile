@@ -1,25 +1,14 @@
-FROM python:3.8.5-slim-buster
+FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY . /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-ARG AWS_ACCESS_KEY_ID
+COPY . .
 
-ARG AWS_SECRET_ACCESS_KEY
+RUN python3 -c "import nltk; nltk.download('stopwords')"
 
-ARG AWS_DEFAULT_REGION
+EXPOSE 7860
 
-ARG MONGO_DB_URL 
-
-ENV AWS_ACCESS_KEY_ID $AWS_ACCESS_KEY_ID
-
-ENV AWS_SECRET_ACCESS_KEY $AWS_SECRET_ACCESS_KEY
-
-ENV AWS_DEFAULT_REGION $AWS_DEFAULT_REGION
-
-ENV MONGO_DB_URL $MONGO_DB_URL
-
-RUN pip install -r requirements.txt
-
-CMD ["python3", "app.py"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
