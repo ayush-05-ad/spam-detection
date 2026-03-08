@@ -22,3 +22,5 @@ boto3[s3]
 mypy-boto3-s3
 
 pyyaml
+
+certifi
