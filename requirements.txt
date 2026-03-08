@@ -16,3 +16,5 @@ websockets
 setuptools
 
 from-root
+
+boto3[s3]
