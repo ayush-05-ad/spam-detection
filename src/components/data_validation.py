@@ -2,7 +2,7 @@ import json
 import sys
 from typing import Tuple, Union
 import pandas as pd
-from evidently.model_profile import Profile
+# from evidently.model_profile import Profile
 from evidently.model_profile.sections import DataDriftProfileSection
 from pandas import DataFrame
 
