@@ -57,7 +57,7 @@ class SimpleStorageService:
         except Exception as e:
             raise SpamhamException(e, sys) from e
 
-    def get_bucket(self, bucket_name: str) -> Bucket:
+    def get_bucket(self, bucket_name: str) -> object:
         """
         Method Name :   get_bucket
         Description :   This method gets the bucket object based on the bucket_name
