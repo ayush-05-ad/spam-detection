@@ -27,6 +27,14 @@ xgboost==1.6.2
 scikit-learn
 setuptools
 # eviently
+python-multipart
+fastapi
+uvicorn
+jinja2
+scikit-learn
+nltk
+boto3
+pymongo
+python-dotenv
 
 
--e .
